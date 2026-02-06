@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Notes | Swapneel Das</title>
+    <!-- Updated Favicon Link -->
+    <link rel="icon" type="image/jpeg" href="https://algoneel.github.io/1.jpeg">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-dark: #1e293b;
+            --accent-blue: #3b82f6;
+            --text-gray: #94a3b8;
+        }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+            border: 2px solid var(--bg-dark);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f1f5f9;
+            scroll-behavior: smooth;
+        }
+        h1, h2, h3, .brand-font { font-family: 'Outfit', sans-serif; }
+        
+        .glass-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-blue);
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .year-btn.active {
+            background-color: var(--accent-blue);
+            color: white;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .study-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+        .study-modal.active { display: block; }
+
+        .reveal { transform: translateY(20px); opacity: 0; transition: all 0.4s ease-out; }
+        .reveal.active { transform: translateY(0); opacity: 1; }
+
+        .blob {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(168, 85, 247, 0.04) 100%);
+            filter: blur(100px);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        select.subject-filter {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2em;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="blob -top-48 -left-48"></div>
+    <div class="blob -bottom-48 -right-48"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-slate-900/80 backdrop-blur-xl z-50 border-b border-white/5">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="index.html" class="brand-font font-bold text-xl tracking-tight text-blue-400">Swapneel Das.</a>
+            <div class="flex space-x-6 font-medium text-slate-400">
+                <a href="index.html" class="hover:text-white transition-colors">Portfolio</a>
+                <a href="blog.html" class="hover:text-white transition-colors">Blog</a>
+                <a href="#" class="text-white border-b-2 border-blue-500">Study</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="pt-32 pb-8 px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="reveal text-4xl md:text-6xl font-bold mb-6 text-white">Study <span class="gradient-text">Notes</span></h1>
+            <p class="reveal text-slate-400 mb-10">Organized archive of my English Honours academic journey.</p>
+            
+            <!-- Search Bar -->
+            <div class="reveal max-w-xl mx-auto mb-8 relative">
+                <input type="text" id="study-search" placeholder="Search topics, authors, or literary eras..." 
+                       class="w-full px-6 py-4 rounded-2xl bg-slate-800/40 border border-white/10 text-white focus:outline-none focus:border-blue-500 transition-all">
+            </div>
+            
+            <!-- Year Selection (Category) -->
+            <div class="reveal flex flex-wrap justify-center gap-3 mb-6">
+                <button onclick="setYear('all')" class="year-btn active px-6 py-2 rounded-full border border-white/10 text-sm font-medium transition-all">All Years</button>
+                <button onclick="setYear('1st Year')" class="year-btn px-6 py-2 rounded-full border border-white/10 text-sm font-medium transition-all">1st Year</button>
+                <button onclick="setYear('2nd Year')" class="year-btn px-6 py-2 rounded-full border border-white/10 text-sm font-medium transition-all">2nd Year</button>
+                <button onclick="setYear('3rd Year')" class="year-btn px-6 py-2 rounded-full border border-white/10 text-sm font-medium transition-all">3rd Year</button>
+                <button onclick="setYear('4th Year')" class="year-btn px-6 py-2 rounded-full border border-white/10 text-sm font-medium transition-all">4th Year</button>
+            </div>
+
+            <!-- Subject Selection (Sub-category - Dynamically filled) -->
+            <div class="reveal flex justify-center">
+                <select id="subject-filter" onchange="setSubject(this.value)" class="subject-filter px-6 py-2 rounded-xl text-sm font-medium w-64 focus:outline-none focus:ring-2 ring-blue-500/20">
+                    <option value="all">All Subjects</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content Grid -->
+    <main class="max-w-6xl mx-auto px-6 pb-12">
+        <div id="notes-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 min-h-[400px]">
+            <!-- Content Injected via JS -->
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="reveal mt-16 flex justify-center items-center gap-6">
+            <button onclick="changePage(-1)" id="prev-btn" class="p-3 rounded-full glass-card hover:text-blue-400 disabled:opacity-30">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            <span id="page-info" class="text-sm font-medium text-slate-400 tracking-widest uppercase">Page 1 of 1</span>
+            <button onclick="changePage(1)" id="next-btn" class="p-3 rounded-full glass-card hover:text-blue-400 disabled:opacity-30">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+        </div>
+    </main>
+
+    <!-- Note Viewer -->
+    <div id="note-viewer" class="study-modal">
+        <div class="max-w-4xl mx-auto px-6 py-20">
+            <button onclick="closeNote()" class="mb-8 flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
+                Back to Library
+            </button>
+            <div id="note-content"></div>
+        </div>
+    </div>
+
+    <footer class="py-12 border-t border-white/5 bg-slate-950 text-center">
+        <p class="text-slate-500 text-sm">© 2026 Swapneel Das. Academic Excellence in English Honours.</p>
+    </footer>
+
+    <script>
+        /**
+         * =========================================================================
+         * AREA TO ADD NEW STUDY NOTES
+         * =========================================================================
+         * year: '1st Year', '2nd Year', '3rd Year', or '4th Year'
+         * subject: The specific course name (This becomes the sub-category)
+         */
+        const allNotes = [
+            { 
+                id: 1, 
+                year: '1st Year', 
+                subject: 'Introduction to Poetry',
+                title: "Understanding Sonnet 18", 
+                excerpt: "Key themes and structural analysis of Shakespeare's famous sonnet.", 
+                date: "Jan 10, 2026",
+                content: `<h1 class="text-4xl font-bold text-white mb-6">Shakespeare's Sonnet 18 Analysis</h1><p class="text-slate-300 text-lg">Detailed notes on the theme of immortality through poetry...</p>`
+            },
+            { 
+                id: 2, 
+                year: '1st Year', 
+                subject: 'English Reading Skills',
+                title: "Effective Skimming Techniques", 
+                excerpt: "How to extract main ideas from dense academic texts quickly.", 
+                date: "Jan 12, 2026",
+                content: `<h1 class="text-4xl font-bold text-white mb-6">Skimming and Scanning</h1><p class="text-slate-300 text-lg">Notes on reading efficiency...</p>`
+            },
+            { 
+                id: 3, 
+                year: '2nd Year', 
+                subject: 'Romantic Poetry',
+                title: "Wordsworth and the Sublime", 
+                excerpt: "Exploring the concept of nature in Tintern Abbey.", 
+                date: "Feb 01, 2026",
+                content: `<h1 class="text-4xl font-bold text-white mb-6">William Wordsworth Analysis</h1><p class="text-slate-300 text-lg">Focusing on the transition from youth to maturity...</p>`
+            },
+            { 
+                id: 4, 
+                year: '3rd Year', 
+                subject: 'Victorian Literature',
+                title: "Themes in Wuthering Heights", 
+                excerpt: "Deep dive into the destructive nature of love and revenge.", 
+                date: "Feb 05, 2026",
+                content: `<h1 class="text-4xl font-bold text-white mb-6">Emily Brontë's Masterpiece</h1><p class="text-slate-300 text-lg">Character analysis of Heathcliff and Catherine...</p>`
+            }
+        ];
+
+        let currentYear = 'all';
+        let currentSubject = 'all';
+        let searchQuery = '';
+        let currentPage = 1;
+        const notesPerPage = 6;
+
+        const grid = document.getElementById('notes-grid');
+        const subjectSelect = document.getElementById('subject-filter');
+
+        function updateSubjectFilter() {
+            const availableSubjects = [...new Set(allNotes
+                .filter(n => currentYear === 'all' || n.year === currentYear)
+                .map(n => n.subject))].sort();
+
+            subjectSelect.innerHTML = '<option value="all">All Subjects</option>';
+            availableSubjects.forEach(sub => {
+                const opt = document.createElement('option');
+                opt.value = sub;
+                opt.textContent = sub;
+                if(sub === currentSubject) opt.selected = true;
+                subjectSelect.appendChild(opt);
+            });
+        }
+
+        function renderNotes() {
+            const filtered = allNotes.filter(n => {
+                const matchesYear = currentYear === 'all' || n.year === currentYear;
+                const matchesSubject = currentSubject === 'all' || n.subject === currentSubject;
+                const matchesSearch = n.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                     n.subject.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesYear && matchesSubject && matchesSearch;
+            });
+
+            const totalPages = Math.ceil(filtered.length / notesPerPage) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const start = (currentPage - 1) * notesPerPage;
+            const paginated = filtered.slice(start, start + notesPerPage);
+
+            grid.innerHTML = '';
+            if (paginated.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-20 text-center text-slate-500">No notes found for this selection.</div>`;
+            } else {
+                paginated.forEach((note, i) => {
+                    grid.insertAdjacentHTML('beforeend', `
+                        <article class="reveal glass-card p-6 rounded-2xl flex flex-col active" style="transition-delay: ${i*50}ms">
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="text-[10px] font-bold tracking-widest uppercase px-2 py-1 bg-blue-500/10 text-blue-400 rounded">${note.year}</span>
+                                <span class="text-[10px] font-bold tracking-widest uppercase px-2 py-1 bg-white/5 text-slate-400 rounded">${note.subject}</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-3 hover:text-blue-400 transition-colors cursor-pointer" onclick="openNote(${note.id})">${note.title}</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed mb-6">${note.excerpt}</p>
+                            <div class="mt-auto pt-4 border-t border-white/5 flex justify-between items-center text-xs text-slate-500">
+                                <span>${note.date}</span>
+                                <button onclick="openNote(${note.id})" class="text-blue-400 font-semibold">View Note →</button>
+                            </div>
+                        </article>
+                    `);
+                });
+            }
+
+            document.getElementById('page-info').innerText = `Page ${currentPage} of ${totalPages}`;
+            document.getElementById('prev-btn').disabled = currentPage === 1;
+            document.getElementById('next-btn').disabled = currentPage === totalPages;
+            setTimeout(reveal, 50);
+        }
+
+        function setYear(year) {
+            currentYear = year;
+            currentSubject = 'all'; 
+            currentPage = 1;
+            document.querySelectorAll('.year-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText === year || (year === 'all' && btn.innerText === 'All Years'));
+            });
+            updateSubjectFilter();
+            renderNotes();
+        }
+
+        function setSubject(sub) {
+            currentSubject = sub;
+            currentPage = 1;
+            renderNotes();
+        }
+
+        document.getElementById('study-search').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            currentPage = 1;
+            renderNotes();
+        });
+
+        function changePage(dir) {
+            currentPage += dir;
+            window.scrollTo({ top: 300, behavior: 'smooth' });
+            renderNotes();
+        }
+
+        function openNote(id) {
+            const note = allNotes.find(n => n.id === id);
+            document.getElementById('note-content').innerHTML = `
+                <div class="flex gap-2 mb-6">
+                    <span class="text-xs font-bold tracking-widest uppercase px-3 py-1 bg-blue-500/20 text-blue-400 rounded">${note.year}</span>
+                    <span class="text-xs font-bold tracking-widest uppercase px-3 py-1 bg-white/5 text-slate-400 rounded">${note.subject}</span>
+                </div>
+                <div class="mb-10 pb-6 border-b border-white/5">
+                    <h1 class="text-4xl font-bold text-white mb-2">${note.title}</h1>
+                    <p class="text-slate-500">Documented on ${note.date}</p>
+                </div>
+                <div class="note-body">${note.content}</div>
+            `;
+            document.getElementById('note-viewer').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeNote() {
+            document.getElementById('note-viewer').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function reveal() {
+            document.querySelectorAll(".reveal").forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight - 50) el.classList.add("active");
+            });
+        }
+
+        window.onscroll = reveal;
+        window.onload = () => {
+            updateSubjectFilter();
+            renderNotes();
+        };
+    </script>
+</body>
+</html>
